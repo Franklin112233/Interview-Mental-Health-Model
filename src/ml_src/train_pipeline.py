@@ -18,7 +18,7 @@ from xgboost import XGBClassifier
 
 from src.ml_src.data_clean import table_clean
 from src.ml_src.data_ingest import ingest_data
-from src.ml_src.utils import PROJ_ROOT, ModelBase, logger
+from src.ml_src.utils import MODEL_DIR, PROJ_ROOT, ModelBase, logger
 
 
 class PipelineCreator(ModelBase):
@@ -171,7 +171,7 @@ class PipelineCreator(ModelBase):
                 logger.info(f"best accuracy is: {self.best_acc}")
                 self.trained_clfs = trained_clfs
                 if self.pipeline_save:
-                    model_path = Path(PROJ_ROOT) / "model_file" / "best_pipeline.pkl"
+                    model_path = Path(MODEL_DIR) / "best_pipeline.pkl"
                     with model_path.open("wb") as f:
                         pickle.dump(self.best_model, f)
                 logger.info(f"Model is trained and saved at {model_path}")
@@ -184,12 +184,10 @@ class PipelineCreator(ModelBase):
                     "best_model": str(self.best_model),
                     "best_acc": str(self.best_acc),
                 }
-                training_log_path = Path(PROJ_ROOT) / "model_file" / "training_log.json"
+                training_log_path = Path(MODEL_DIR) / "training_log.json"
                 with training_log_path.open("a") as f:
                     json.dump(training_res, f, indent=4)
-                training_info_path = (
-                    Path(PROJ_ROOT) / "model_file" / "training_info.json"
-                )
+                training_info_path = Path(MODEL_DIR) / "training_info.json"
                 with training_info_path.open("w") as f:
                     json.dump(training_res, f, indent=4)
                 self.training_res = training_res

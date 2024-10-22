@@ -8,8 +8,8 @@ ml_train:
   target: "history_of_mental_illness"
   random_seed: 123
   test_size: 0.25
-  # model_names: ['GLM', 'RF', 'XGB', 'LGBM']
-  model_names: ['GLM']
+  model_names: ['GLM', 'RF', 'XGB', 'LGBM']
+  # model_names: ['GLM']
   model_params:
     GLM:
       classifier__C: [0.1, 1, 10]

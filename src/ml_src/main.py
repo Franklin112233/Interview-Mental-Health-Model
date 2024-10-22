@@ -1,7 +1,8 @@
+import click
+
 from src.ml_src.predict import load_model, load_test_data
 from src.ml_src.train_pipeline import PipelineCreator
 from src.ml_src.utils import config, logger
-import click
 
 
 def model_train(config=config):

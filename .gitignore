@@ -164,6 +164,7 @@ cython_debug/
 
 # Raw data files
 data/depression_data.csv
+data/transcripts_v3/
 
 # Poetry lock file
 poetry.lock
