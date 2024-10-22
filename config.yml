@@ -1,0 +1,32 @@
+ml_utils:
+  raw_data_file: depression_data.csv
+  sample_data_file: depression_data_sample.csv
+  sample_fraction: 0.01
+  random_state: 123
+
+ml_train:
+  target: "history_of_mental_illness"
+  random_seed: 123
+  test_size: 0.25
+  # model_names: ['GLM', 'RF', 'XGB', 'LGBM']
+  model_names: ['GLM']
+  model_params:
+    GLM:
+      classifier__C: [0.1, 1, 10]
+      classifier__max_iter: [500]
+    RF:
+      classifier__n_estimators: [10, 20, 50, 100]
+      classifier__max_depth: [3, 5, 10, 20]
+    XGB:
+      classifier__learning_rate: [0.1, 0.01]
+      classifier__n_estimators: [50, 100, 150]
+      classifier__max_depth: [3, 5, 10]
+    LGBM:
+      classifier__learning_rate: [0.1, 0.01]
+      classifier__n_estimators: [50, 100, 150, 200]
+      classifier__max_depth: [3, 5, 10, 20]
+      classifier__num_leaves: [10, 20, 30, 50, 100]
+  model_save: True
+  cv: 3
+  scoring: roc_auc
+  n_jobs: -1
