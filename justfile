@@ -20,6 +20,10 @@ train: clean_mlflow
     -@poetry run python src/ml_src/main.py
     -@poetry run mlflow ui
 
+# Run the streamlit app
+streamlit:
+    @poetry run streamlit run src/genai_src/sentiment_analysis.py
+
 # Clean out the cache files
 clean_cache:
     -@find . -type f -name "*.py[co]" -delete
