@@ -40,7 +40,12 @@ with st.form("my_form"):
         # 2 prompt template
         template2 = """
         Please act as a machine learning model trained for perform a supervised learning task,
-        for extract the outcome of a call conversation in '{option}' Language. Please Determine call outcome either "issue resolved", or "follow-up action needed".
+        for extract the outcome of a call conversation from customer to a staff 
+        in the '{option}' team.
+        Please Determine call outcome either "issue resolved", or "follow-up action needed".
+        Please also give the score of sentiment analysis between 0-1.
+        plese also give the summary of the coversation in the review text field.
+        The summary should be a short description of the conversation less than 30 words.
 
         Example:
 
@@ -48,6 +53,8 @@ with st.form("my_form"):
         text_review with value: {text_review}
         field 2 named :
         outcome with value: $outcome$
+        score of sentiment with value: $score$
+        summary of the coversation with value: $summary$
         Field 3 named :
         language with value: {option}
         Review text: '''{text_review}'''

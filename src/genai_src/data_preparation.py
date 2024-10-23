@@ -17,9 +17,21 @@ def parse_transcripts(transcripts_dir: Path = TRANSCRIPTS_DIR) -> pd.DataFrame:
                     transcript = file.read()
                 member_texts = re.findall(r"Member: (.*?)\n", transcript, re.DOTALL)
                 member_paragraph = " ".join(member_texts)
-                member_transcripts_data.append(
-                    {"File_Name": file_name, "Member_Text": member_paragraph}
-                )
+            if "Customer Support" in transcript:
+                team = "Customer_Support"
+            elif "PA Agent" in transcript:
+                team = "PA_Agent"
+            elif "Technical Support" in transcript:
+                team = "Technical_Support"
+            else:
+                team = "Unknown"
+            member_transcripts_data.append(
+                {
+                    "File_Name": file_name,
+                    "Member_Text": member_paragraph,
+                    "Team": team,
+                }
+            )
     except FileNotFoundError as e:
         logger.error(f"File system error occurred: {e}")
     except OSError as e:
