@@ -191,7 +191,7 @@ class PipelineCreator(ModelBase):
                 with training_info_path.open("w") as f:
                     json.dump(training_res, f, indent=4)
                 self.training_res = training_res
-        except (ValueError, KeyError, TypeError) as e:
+        except Exception as e:
             logger.error("An error occurred: %s", str(e))
         else:
             logger.info("Model Train Completed")

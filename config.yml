@@ -30,3 +30,7 @@ ml_train:
   cv: 3
   scoring: roc_auc
   n_jobs: -1
+
+genai_sentiment:
+  llm_model_name: "gpt-3.5-turbo-instruct"
+  temperature: 0

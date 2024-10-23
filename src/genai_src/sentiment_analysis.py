@@ -1,73 +1,73 @@
-import streamlit as st
+import json
+import sys
+
+import pandas as pd
 from dotenv import load_dotenv
+from icecream import ic
 from langchain.chains import LLMChain
 from langchain.llms import OpenAI
 from langchain.prompts import PromptTemplate
 
+from src.genai_src.prompt_template import template
+from src.genai_src.utils import DATA_DIR, logger
+
 load_dotenv()
-llm = OpenAI(temperature=0, model="gpt-3.5-turbo-instruct")
 
-with st.form("my_form"):
-    st.title("Sentiment Analysis")
-    text_review = st.text_area("Write me a review")
 
-    option = st.selectbox(
-        "Select the language to evaluate:", ("Italian", "Spanish", "English")
+def sentiment_llm(text_review: str, team: str) -> json:
+    llm = OpenAI(
+        model="gpt-3.5-turbo-instruct",
+        temperature=0,
     )
-    submitted = st.form_submit_button("Submit")
-    if submitted:
+    prompt = PromptTemplate(template=template, input_variables=["text_review", "team"])
+    llm_chain = LLMChain(prompt=prompt, llm=llm)
+    if prompt:
+        response = llm_chain.run({"text_review": text_review, "team": team})
+    return json.loads(response)
 
-        # 1 prompt template
-        template1 = """
-        Please act as a machine learning model trained for perform a supervised learning task,
-        for extract the sentiment of a review in '{option}' Language.
 
-        Give your answer writing a Json evaluating the sentiment field between the dollar sign, the value must be printed without dollar sign.
-        The value of sentiment must be "positive"  or "negative", otherwise if the text is not valuable write "null".
+def sentment_run() -> pd.DataFrame:
+    member_transcript_df = pd.read_csv(DATA_DIR / "member_transcripts.csv")[
+        ["Member_Text", "Team"]
+    ]
+    outcome_list = []
+    sentiment_list = []
+    sentiment_score_list = []
+    summary_list = []
+    for _, row in member_transcript_df.iterrows():
+        text_review = row["Member_Text"]
+        team = row["Team"]
+        response = sentiment_llm(text_review, team)
+        outcome = response["outcome"]
+        sentiment = response["sentiment"]
+        sentiment_score = response["sentiment_score"]
+        summary = response["summary"]
+        outcome_list.append(outcome)
+        sentiment_list.append(sentiment)
+        sentiment_score_list.append(sentiment_score)
+        summary_list.append(summary)
+    response_df = pd.DataFrame(
+        {
+            "Outcome": outcome_list,
+            "Sentiment": sentiment_list,
+            "Sentiment_Score": sentiment_score_list,
+            "Summary": summary_list,
+        }
+    )
+    result_df = pd.concat([member_transcript_df, response_df], axis=1)
+    result_df.to_csv(DATA_DIR / "sentiment_result.csv", index=False)
+    logger.info(f"Sentiment analysis result saved in {DATA_DIR}'/sentiment_result.csv")
+    return result_df
 
-        Example:
 
-        field 1 named :
-        text_review with value: {text_review}
-        field 2 named :
-        sentiment with value: $sentiment$
-        Field 3 named :
-        language with value: {option}
-        Review text: '''{text_review}'''
-
-        """
-
-        # 2 prompt template
-        template2 = """
-        Please act as a machine learning model trained for perform a supervised learning task,
-        for extract the outcome of a call conversation from customer to a staff 
-        in the '{option}' team.
-        Please Determine call outcome either "issue resolved", or "follow-up action needed".
-        Please also give the score of sentiment analysis between 0-1.
-        plese also give the summary of the coversation in the review text field.
-        The summary should be a short description of the conversation less than 30 words.
-
-        Example:
-
-        field 1 named :
-        text_review with value: {text_review}
-        field 2 named :
-        outcome with value: $outcome$
-        score of sentiment with value: $score$
-        summary of the coversation with value: $summary$
-        Field 3 named :
-        language with value: {option}
-        Review text: '''{text_review}'''
-
-        """
-
-        prompt = PromptTemplate(
-            template=template2, input_variables=["text_review", "option"]
-        )
-
-        llm_chain = LLMChain(prompt=prompt, llm=llm)
-
-        if prompt:
-            response = llm_chain.run({"text_review": text_review, "option": option})
-            print(response)
-            st.text(response)
+if __name__ == "__main__":
+    try:
+        result_df = sentment_run()
+        ic(result_df)
+    except json.JSONDecodeError as e:
+        logger.error(f"An json decode error occurred: {e}")
+    except Exception as e:
+        logger.error(f"An error occurred: {e}")
+    finally:
+        logger.info("Sentiment analysis completed")
+        sys.exit(0)
