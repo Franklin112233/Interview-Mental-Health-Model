@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import pandas as pd
-from icecream import ic
 from sklearn.base import BaseEstimator, TransformerMixin
 
 from src.ml_src.utils import DATA_DIR, config, logger
@@ -12,6 +11,17 @@ def create_sample_data(
     fraction: float = config["ml_utils"]["sample_fraction"],
     random_state: int = config["ml_utils"]["random_state"],
 ) -> tuple:
+    """create_sample_data which will be used for the machine learning model training.
+
+    Args:
+        data_file (pd.DataFrame): name of the input data.
+        fraction (float): fraction of the data size of sampling.
+        random_state (int): random state for sampling.
+
+    Returns:
+        tuple: created sample data frame and saved in DATA_DIR.
+
+    """
     return (
         pd.read_csv(Path(DATA_DIR, data_file))
         .sample(frac=fraction, random_state=random_state)
@@ -34,10 +44,18 @@ def remove_outliers(sample_df: pd.DataFrame, column: pd.Series) -> pd.DataFrame:
 
 
 def table_clean(sample_df: pd.DataFrame) -> pd.DataFrame:
+    """Clean the sample data for the machine learning model training.
+
+    Args:
+        sample_df (pd.DataFrame): data to clean.
+
+    Returns:
+        pd.DataFrame: cleaned data.
+
+    """
     sample_df = sample_df.loc[:, ~sample_df.columns.str.contains("^Unnamed")]
     sample_df_renamed = sample_df.rename(
         columns={
-            # "Unnamed: 0": "index",
             "Name": "name",
             "Age": "age",
             "Marital Status": "marital_status",
@@ -100,14 +118,10 @@ def table_clean(sample_df: pd.DataFrame) -> pd.DataFrame:
 
 
 class CustomTransformer(BaseEstimator, TransformerMixin):
+    """Custom Transformer mixin class for the model training pipeline."""
+
     def fit(self, X, y=None):
         return self
 
-    def transform(self, X):
+    def transform(self, X) -> pd.DataFrame:
         return table_clean(X)
-
-
-if __name__ == "__main__":
-    create_sample_data()
-    ic(table_clean(pd.read_csv(Path(DATA_DIR, "depression_data_sample.csv"))))
-    table_clean(pd.read_csv(Path(DATA_DIR, "depression_data_sample.csv"))).info()

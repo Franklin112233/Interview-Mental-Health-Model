@@ -8,10 +8,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-PROJ_ROOT = Path(__file__).resolve().parents[2]
-DATA_DIR = PROJ_ROOT / "data"
-TRANSCRIPTS_DIR = DATA_DIR / "transcripts_v3"
-REPORTS_DIR = PROJ_ROOT / "reports"
+PROJ_ROOT: Path = Path(__file__).resolve().parents[2]
+DATA_DIR: Path = PROJ_ROOT / "data"
+TRANSCRIPTS_DIR: Path = DATA_DIR / "transcripts_v3"
+REPORTS_DIR: Path = PROJ_ROOT / "reports"
 
 
 with Path(f"{PROJ_ROOT}/config.yml").open() as f:

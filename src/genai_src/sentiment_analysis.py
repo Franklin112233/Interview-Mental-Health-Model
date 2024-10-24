@@ -15,6 +15,16 @@ load_dotenv()
 
 
 def sentiment_llm(text_review: str, team: str) -> json:
+    """_Create a sentiment analysis model using GPT and langchain.
+
+    Args:
+        text_review (str): member text
+        team (str): team in "Customer Support", "PA Agent", "Technical Support", or "Unknown"
+
+    Returns:
+        Resonse (json) from langchain llm model
+
+    """
     llm = OpenAI(
         model="gpt-3.5-turbo-instruct",
         temperature=0,
@@ -27,9 +37,15 @@ def sentiment_llm(text_review: str, team: str) -> json:
 
 
 def sentment_run() -> pd.DataFrame:
-    member_transcript_df = pd.read_csv(DATA_DIR / "member_transcripts.csv")[
-        ["Member_Text", "Team"]
-    ]
+    """Run sentiment analysis and save the result in the DATA_DIR.
+
+    Returns:
+        Response dataframe with the fields of Outcome, Sentiment, Sentiment_Score, and Summary
+
+    """
+    member_transcript_df: pd.DataFrame = pd.read_csv(
+        DATA_DIR / "member_transcripts.csv"
+    )[["Member_Text", "Team"]]
     outcome_list = []
     sentiment_list = []
     sentiment_score_list = []
@@ -54,7 +70,7 @@ def sentment_run() -> pd.DataFrame:
             "Summary": summary_list,
         }
     )
-    result_df = pd.concat([member_transcript_df, response_df], axis=1)
+    result_df: pd.DataFrame = pd.concat([member_transcript_df, response_df], axis=1)
     result_df.to_csv(DATA_DIR / "sentiment_result.csv", index=False)
     logger.info(f"Sentiment analysis result saved in {DATA_DIR}'/sentiment_result.csv")
     return result_df
@@ -62,7 +78,7 @@ def sentment_run() -> pd.DataFrame:
 
 if __name__ == "__main__":
     try:
-        result_df = sentment_run()
+        result_df: pd.DataFrame = sentment_run()
         ic(result_df)
     except json.JSONDecodeError as e:
         logger.error(f"An json decode error occurred: {e}")

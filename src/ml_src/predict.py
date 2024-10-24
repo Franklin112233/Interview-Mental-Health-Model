@@ -6,16 +6,18 @@ from sklearn.pipeline import Pipeline
 
 from src.ml_src.data_clean import table_clean
 from src.ml_src.data_ingest import ingest_data
-from src.ml_src.utils import MODEL_DIR, PROJ_ROOT
+from src.ml_src.utils import MODEL_DIR
 
 
 def load_model(model_dir: Path = MODEL_DIR) -> Pipeline:
-    model_path = Path(model_dir) / "best_pipeline.pkl"
+    """Load the best model from the model directory."""
+    model_path: Path = Path(model_dir) / "best_pipeline.pkl"
     with model_path.open("rb") as f:
         return joblib.load(f)
 
 
 def load_test_data(n: int = 20) -> pd.DataFrame:
+    """Load a sample of the test data to predict."""
     return (
         table_clean(ingest_data())
         .sample(n=n)

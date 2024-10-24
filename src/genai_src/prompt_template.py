@@ -1,7 +1,8 @@
 template = """
     Please act as a machine learning model trained to perform a supervised learning task,
-    extracting the sentiment of provided call conversation text {text_review} from a customer to a staff member
-    in the '{team}' team.
+    extracting the sentiment of provided call conversation text {text_review}
+    from a customer to a staff member in the '{team}' team of
+    "Customer Support", "PA Agent", "Technical Support", or "Unknown".
 
     Provide your answer response in JSON format,
     evaluating the sentiment field between the dollar signs.

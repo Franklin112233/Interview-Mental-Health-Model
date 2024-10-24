@@ -5,7 +5,8 @@ from src.ml_src.train_pipeline import PipelineCreator
 from src.ml_src.utils import config, logger
 
 
-def model_train(config=config):
+def model_train(config=config) -> None:
+    """Training pipeline to run the model training process."""
     try:
         pl = PipelineCreator(config)
         pl.table_fetch()
@@ -17,7 +18,8 @@ def model_train(config=config):
         raise
 
 
-def model_predict():
+def model_predict() -> None:
+    """Prediction pipeline to run the model prediction process."""
     try:
         pl = load_model()
         test_df = load_test_data()
@@ -31,7 +33,8 @@ def model_predict():
 
 @click.command()
 @click.option("--predict", is_flag=True, help="Using the model to make predictions")
-def main(predict):
+def main(predict) -> None:
+    """Select the pipeline from train and predict to run."""
     if predict:
         model_predict()
     else:

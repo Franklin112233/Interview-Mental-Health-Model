@@ -9,8 +9,8 @@ from lightgbm import LGBMClassifier
 from sklearn import preprocessing
 
 from src.ml_src.data_clean import table_clean
-from src.ml_src.utils import DATA_DIR, REPORTS_DIR, config, logger
 from src.ml_src.predict import load_model
+from src.ml_src.utils import DATA_DIR, REPORTS_DIR, config, logger
 
 
 def create_data_profile(
@@ -18,7 +18,7 @@ def create_data_profile(
 ) -> None:
     from ydata_profiling import ProfileReport
 
-    df_loaded = pd.read_csv(Path(DATA_DIR, data_file), index_col=0)
+    df_loaded: pd.DataFrame = pd.read_csv(Path(DATA_DIR, data_file), index_col=0)
     data_profile = ProfileReport(
         df_loaded, title="Data Profiling Report", explorative=True
     )
@@ -36,10 +36,14 @@ def create_drift_report(
             DataDriftPreset(),
         ]
     )
-    df_loaded = pd.read_csv(Path(DATA_DIR, data_file), index_col=0)
-    df_sample = table_clean(df_loaded)
-    df_mental_illness = df_sample[df_sample["history_of_mental_illness"] == 1]
-    df_no_mental_illness = df_sample[df_sample["history_of_mental_illness"] == 0]
+    df_loaded: pd.DataFrame = pd.read_csv(Path(DATA_DIR, data_file), index_col=0)
+    df_sample: pd.DataFrame = table_clean(df_loaded)
+    df_mental_illness: pd.DataFrame = df_sample[
+        df_sample["history_of_mental_illness"] == 1
+    ]
+    df_no_mental_illness: pd.DataFrame = df_sample[
+        df_sample["history_of_mental_illness"] == 0
+    ]
     data_drift_report.run(
         reference_data=df_no_mental_illness, current_data=df_mental_illness
     )
@@ -51,14 +55,16 @@ def create_drift_report(
 def create_diagnosis(
     data_file: pd.DataFrame = config["ml_utils"]["sample_data_file"],
 ) -> None:
-    df_loaded = pd.read_csv(Path(DATA_DIR, data_file), index_col=0)
-    df_sample = table_clean(df_loaded)
+    df_loaded: pd.DataFrame = pd.read_csv(Path(DATA_DIR, data_file), index_col=0)
+    df_sample: pd.DataFrame = table_clean(df_loaded)
     # le = preprocessing.LabelEncoder()
     # df_sample = df_sample.apply(le.fit_transform).drop(["Unnamed: 0"], axis=1)
     # x_train = df_sample.drop(["history_of_mental_illness"], axis=1).head(5000)
     # y_train = df_sample[["history_of_mental_illness"]].head(5000)
-    x_test = df_sample.drop(["history_of_mental_illness"], axis=1).tail(5000)
-    y_test = df_sample[["history_of_mental_illness"]].tail(5000)
+    x_test: pd.DataFrame = df_sample.drop(["history_of_mental_illness"], axis=1).tail(
+        5000
+    )
+    y_test: pd.DataFrame = df_sample[["history_of_mental_illness"]].tail(5000)
 
     # model = LGBMClassifier()
     # model.fit(x_train, y_train)

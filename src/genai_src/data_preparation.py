@@ -1,6 +1,7 @@
 import os
 import re
 from pathlib import Path
+from typing import Any
 
 import pandas as pd
 
@@ -8,14 +9,25 @@ from src.genai_src.utils import DATA_DIR, TRANSCRIPTS_DIR, logger
 
 
 def parse_transcripts(transcripts_dir: Path = TRANSCRIPTS_DIR) -> pd.DataFrame:
+    """Parse the transcripts of the members and return a DataFrame.
+
+    Args:
+        transcripts_dir (Path, optional): Description. Defaults to TRANSCRIPTS_DIR.
+
+    Returns:
+        pd.DataFrame: Table contain the information of filename, member text, and team.
+
+    """
     member_transcripts_data = []
     try:
-        for file_name in os.listdir(transcripts_dir):
+        for file_name in os.listdir(path=transcripts_dir):
             if file_name.endswith(".txt"):
-                file_path = transcripts_dir / file_name
+                file_path: Path = transcripts_dir / file_name
                 with file_path.open() as file:
-                    transcript = file.read()
-                member_texts = re.findall(r"Member: (.*?)\n", transcript, re.DOTALL)
+                    transcript: str = file.read()
+                member_texts: list[Any] = re.findall(
+                    r"Member: (.*?)\n", transcript, re.DOTALL
+                )
                 member_paragraph = " ".join(member_texts)
             if "Customer Support" in transcript:
                 team = "Customer_Support"
@@ -50,9 +62,21 @@ def parse_transcripts(transcripts_dir: Path = TRANSCRIPTS_DIR) -> pd.DataFrame:
 def prepare_transcripts(
     transcripts_dir: Path = TRANSCRIPTS_DIR, data_dir: Path = DATA_DIR
 ) -> None:
-    member_transcripts_df = parse_transcripts(transcripts_dir)
+    """Extract the member text and team from the transcripts and save it as a csv file.
+
+    Args:
+        transcripts_dir (Path, optional): _description_. Defaults to TRANSCRIPTS_DIR.
+        data_dir (Path, optional): _description_. Defaults to DATA_DIR.
+
+    """
+    member_transcripts_df: pd.DataFrame = parse_transcripts(
+        transcripts_dir=transcripts_dir
+    )
     member_transcripts_df.to_csv(Path(data_dir) / "member_transcripts.csv", index=False)
 
 
 if __name__ == "__main__":
-    prepare_transcripts()
+    try:
+        prepare_transcripts()
+    except Exception as e:
+        logger.error(f"An error occurred: {e}")

@@ -8,12 +8,13 @@ ml_train:
   target: "history_of_mental_illness"
   random_seed: 123
   test_size: 0.25
-  # model_names: ['GLM', 'RF', 'XGB', 'LGBM']
-  model_names: ['LGBM']
+  model_names: ['GLM', 'RF', 'XGB', 'LGBM']
+  # model_names: ['GLM']
   model_params:
     GLM:
       classifier__C: [0.1, 1, 10]
-      classifier__max_iter: [500]
+      classifier__max_iter: [1000]
+      classifier__penalty: ['l1', 'l2']
     RF:
       classifier__n_estimators: [20, 50, 100]
       classifier__max_depth: [10, 20]
@@ -23,9 +24,9 @@ ml_train:
       classifier__max_depth: [10, 20]
     LGBM:
       classifier__learning_rate: [0.1, 0.01]
-      classifier__n_estimators: [50, 100, 150, 200, 250]
-      classifier__max_depth: [10, 20, 30, 40]
-      classifier__num_leaves: [20, 50, 100, 150]
+      classifier__n_estimators: [50, 100, 150]
+      classifier__max_depth: [10, 20, 30]
+      classifier__num_leaves: [20, 50, 100]
   model_save: True
   cv: 3
   scoring: roc_auc

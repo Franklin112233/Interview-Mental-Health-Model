@@ -22,7 +22,9 @@ from src.ml_src.utils import MODEL_DIR, PROJ_ROOT, ModelBase, logger
 
 
 class PipelineCreator(ModelBase):
-    def __init__(self, config: dict):
+    """Model training pipeline to run the whole model training steps."""
+
+    def __init__(self, config: dict) -> None:
         self.config_info = config
         self.target = self.config_info["ml_train"]["target"]
         self.test_size = self.config_info["ml_train"]["test_size"]
@@ -45,11 +47,13 @@ class PipelineCreator(ModelBase):
         self.pipeline_save = self.config_info["ml_train"]["model_save"]
         self.training_res = None
 
-    def table_fetch(self):
+    def table_fetch(self) -> None:
+        """Fetch and clean the data table."""
         self.sample_df = table_clean(ingest_data())
         logger.info("Data Loaded and Cleaned")
 
-    def data_split(self):
+    def data_split(self) -> None:
+        """Split the data into training and validation sets."""
         self.x_train, self.x_valid, self.y_train, self.y_valid = train_test_split(
             self.sample_df.drop(self.target, axis=1),
             self.sample_df[self.target],
@@ -58,7 +62,8 @@ class PipelineCreator(ModelBase):
         )
         logger.info("Data Split")
 
-    def feature_select(self):
+    def feature_select(self) -> None:
+        """Select numerical and categorical features for the model."""
         self.features = self.sample_df.drop(self.target, axis=1).columns
         self.features_cat = (
             self.sample_df.drop(self.target, axis=1)
@@ -72,7 +77,8 @@ class PipelineCreator(ModelBase):
         )
 
     @staticmethod
-    def get_clf(model_name: str):
+    def get_clf(model_name: str) -> object:
+        """Return the classifier object based on the model name."""
         match model_name:
             case "GLM":
                 return LogisticRegression()
@@ -85,7 +91,8 @@ class PipelineCreator(ModelBase):
             case _:
                 return "Model not found"
 
-    def pipeline_fit(self):
+    def pipeline_fit(self) -> None:
+        """Fit the pipeline with the training data and perform grid search and cross validation."""
         numeric_transformer = Pipeline(
             steps=[
                 ("imputer", SimpleImputer(strategy="median")),
@@ -128,7 +135,8 @@ class PipelineCreator(ModelBase):
             res_list.append(res)
             self.res_list = res_list
 
-    def model_comparison(self, models: list):
+    def model_comparison(self, models: list) -> None:
+        """Compare models and select the best one based on validation accuracy."""
         best_acc = 0.0
         best_model = None
         best_each_list = []
@@ -156,7 +164,8 @@ class PipelineCreator(ModelBase):
             best_each_list.append(best_each_dict)
             self.best_each_list = best_each_list
 
-    def model_run(self):
+    def model_run(self) -> tuple:
+        """Run the model training pipeline and save the best model to the MODEL_DIR."""
         try:
             mlflow.autolog()
             with mlflow.start_run():

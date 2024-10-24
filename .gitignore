@@ -175,3 +175,6 @@ poetry.lock
 # mlflow experiments
 mlruns/
 data/transcripts_v3/
+
+# vscode
+.vscode/

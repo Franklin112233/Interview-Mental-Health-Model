@@ -7,6 +7,8 @@ from src.ml_src.utils import DATA_DIR, config
 
 
 class IngestData:
+    """Ingest data from a CSV file."""
+
     def __init__(self) -> None:
         pass
 
@@ -17,6 +19,7 @@ class IngestData:
 
 
 def ingest_data() -> pd.DataFrame:
+    """Run the data ingestion process."""
     try:
         ingest_data = IngestData()
         return ingest_data.get_data()
