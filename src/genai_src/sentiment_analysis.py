@@ -43,9 +43,9 @@ def sentment_run() -> pd.DataFrame:
         Response dataframe with the fields of Outcome, Sentiment, Sentiment_Score, and Summary
 
     """
-    member_transcript_df: pd.DataFrame = pd.read_csv(
-        DATA_DIR / "member_transcripts.csv"
-    )[["Member_Text", "Team"]]
+    member_transcript_df: pd.DataFrame = pd.read_csv(DATA_DIR / "member_transcripts.csv")[
+        ["Member_Text", "Team"]
+    ]
     outcome_list = []
     sentiment_list = []
     sentiment_score_list = []

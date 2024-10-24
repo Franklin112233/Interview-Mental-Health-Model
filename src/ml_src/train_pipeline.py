@@ -1,5 +1,4 @@
 import json
-import os
 import pickle
 from datetime import datetime
 from pathlib import Path
@@ -16,9 +15,9 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from xgboost import XGBClassifier
 
-from src.ml_src.data_clean import CustomTransformer, table_clean
+from src.ml_src.data_clean import CustomTransformer, table_clean  # noqa: F401
 from src.ml_src.data_ingest import ingest_data
-from src.ml_src.utils import MODEL_DIR, PROJ_ROOT, ModelBase, logger
+from src.ml_src.utils import MODEL_DIR, ModelBase, logger
 
 
 class PipelineCreator(ModelBase):
@@ -66,9 +65,7 @@ class PipelineCreator(ModelBase):
         """Select numerical and categorical features for the model."""
         self.features = self.sample_df.drop(self.target, axis=1).columns
         self.features_cat = (
-            self.sample_df.drop(self.target, axis=1)
-            .select_dtypes(include="object")
-            .columns
+            self.sample_df.drop(self.target, axis=1).select_dtypes(include="object").columns
         )
         self.features_num = (
             self.sample_df.drop(self.target, axis=1)
@@ -148,9 +145,7 @@ class PipelineCreator(ModelBase):
             if valid_acc > best_acc:
                 best_acc = valid_acc
                 best_model = model
-            precision, recall, fscore, _ = precision_recall_fscore_support(
-                self.y_valid, pred_valid
-            )
+            precision, recall, fscore, _ = precision_recall_fscore_support(self.y_valid, pred_valid)
             best_each_dict = {
                 "model": str(model),
                 "train_acc": train_acc,
@@ -172,7 +167,7 @@ class PipelineCreator(ModelBase):
                 trained_clfs = []
                 self.pipeline_fit()
                 for model_info in self.res_list:
-                    best_clf = list(model_info.values())[0]
+                    best_clf = list(model_info.values())[0]  # noqa: RUF015
                     trained_clfs.append(best_clf)
                     self.model_comparison(trained_clfs)
                 logger.info("Model Run")

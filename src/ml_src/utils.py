@@ -2,7 +2,6 @@ import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
 
-import pandas as pd
 import yaml
 
 logging.basicConfig(

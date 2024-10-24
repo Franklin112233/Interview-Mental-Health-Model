@@ -38,9 +38,7 @@ def remove_outliers(sample_df: pd.DataFrame, column: pd.Series) -> pd.DataFrame:
     iqr = q3 - q1
     lower_bound = q1 - 1.5 * iqr
     upper_bound = q3 + 1.5 * iqr
-    return sample_df[
-        (sample_df[column] >= lower_bound) & (sample_df[column] <= upper_bound)
-    ]
+    return sample_df[(sample_df[column] >= lower_bound) & (sample_df[column] <= upper_bound)]
 
 
 def table_clean(sample_df: pd.DataFrame) -> pd.DataFrame:
@@ -100,17 +98,17 @@ def table_clean(sample_df: pd.DataFrame) -> pd.DataFrame:
     sample_df_renamed["physical_activity_level"] = sample_df_renamed[
         "physical_activity_level"
     ].replace(("Sedentary", "Moderate", "Active"), (1, 2, 3))
-    sample_df_renamed["alcohol_consumption"] = sample_df_renamed[
-        "alcohol_consumption"
-    ].replace(("Low", "Moderate", "High"), (1, 2, 3))
+    sample_df_renamed["alcohol_consumption"] = sample_df_renamed["alcohol_consumption"].replace(
+        ("Low", "Moderate", "High"), (1, 2, 3)
+    )
     sample_df_renamed["dietary_habits"] = (
         sample_df_renamed["dietary_habits"]
         .replace(("Unhealthy", "Moderate", "Healthy"), (1, 2, 3))
         .astype(int)
     )
-    sample_df_renamed["sleeping_patterns"] = sample_df_renamed[
-        "sleeping_patterns"
-    ].replace(("Poor", "Fair", "Good"), (1, 2, 3))
+    sample_df_renamed["sleeping_patterns"] = sample_df_renamed["sleeping_patterns"].replace(
+        ("Poor", "Fair", "Good"), (1, 2, 3)
+    )
 
     sample_df_renamed.pipe(remove_outliers, "income").pipe(remove_outliers, "age")
 
@@ -120,8 +118,8 @@ def table_clean(sample_df: pd.DataFrame) -> pd.DataFrame:
 class CustomTransformer(BaseEstimator, TransformerMixin):
     """Custom Transformer mixin class for the model training pipeline."""
 
-    def fit(self, X, y=None):
+    def fit(self, X, y=None):  # noqa: ANN201, N803
         return self
 
-    def transform(self, X) -> pd.DataFrame:
+    def transform(self, X) -> pd.DataFrame:  # noqa: N803
         return table_clean(X)

@@ -5,8 +5,6 @@ import pandas as pd
 from evidently.metric_preset import DataDriftPreset
 from evidently.report import Report
 from explainerdashboard import ClassifierExplainer, ExplainerDashboard
-from lightgbm import LGBMClassifier
-from sklearn import preprocessing
 
 from src.ml_src.data_clean import table_clean
 from src.ml_src.predict import load_model
@@ -56,18 +54,9 @@ def create_diagnosis(
     data_file: pd.DataFrame = config["ml_utils"]["sample_data_file"],
 ) -> None:
     df_loaded: pd.DataFrame = pd.read_csv(Path(DATA_DIR, data_file), index_col=0)
-    df_sample: pd.DataFrame = table_clean(df_loaded)
-    # le = preprocessing.LabelEncoder()
-    # df_sample = df_sample.apply(le.fit_transform).drop(["Unnamed: 0"], axis=1)
-    # x_train = df_sample.drop(["history_of_mental_illness"], axis=1).head(5000)
-    # y_train = df_sample[["history_of_mental_illness"]].head(5000)
-    x_test: pd.DataFrame = df_sample.drop(["history_of_mental_illness"], axis=1).tail(
-        5000
-    )
-    y_test: pd.DataFrame = df_sample[["history_of_mental_illness"]].tail(5000)
-
-    # model = LGBMClassifier()
-    # model.fit(x_train, y_train)
+    df_sample: pd.DataFrame = table_clean(df_loaded).sample(n=10000)
+    x_test: pd.DataFrame = df_sample.drop(["history_of_mental_illness"], axis=1)
+    y_test: pd.DataFrame = df_sample[["history_of_mental_illness"]]
     model = load_model()
     explainer = ClassifierExplainer(model, x_test, y_test)
     dignosis_board = ExplainerDashboard(
@@ -77,7 +66,7 @@ def create_diagnosis(
         # shap_interaction=False,
         # decision_trees=False
     )
-    dignosis_board.run(host="0.0.0.0", port=8508, use_waitress=True)
+    dignosis_board.run(host="0.0.0.0", port=8508, use_waitress=True)  # noqa: S104
 
 
 if __name__ == "__main__":
@@ -91,4 +80,3 @@ if __name__ == "__main__":
             create_diagnosis()
         case _:
             logger.error("Invalid report type")
-            raise ValueError("Invalid report type")

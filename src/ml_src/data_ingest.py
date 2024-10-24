@@ -13,9 +13,7 @@ class IngestData:
         pass
 
     def get_data(self) -> pd.DataFrame:
-        return pd.read_csv(
-            Path(DATA_DIR, config["ml_utils"]["sample_data_file"]), index_col=0
-        )
+        return pd.read_csv(Path(DATA_DIR, config["ml_utils"]["sample_data_file"]), index_col=0)
 
 
 def ingest_data() -> pd.DataFrame:
