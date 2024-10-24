@@ -17,6 +17,8 @@ click = "^8.1.7"
 langchain = "^0.3.4"
 openai = "0.28"
 langchain-community = "^0.3.3"
+explainerdashboard = "^0.4.7"
+evidently = "^0.4.38"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.7.0"

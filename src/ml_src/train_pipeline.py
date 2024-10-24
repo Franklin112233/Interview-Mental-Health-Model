@@ -16,7 +16,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from xgboost import XGBClassifier
 
-from src.ml_src.data_clean import table_clean
+from src.ml_src.data_clean import CustomTransformer, table_clean
 from src.ml_src.data_ingest import ingest_data
 from src.ml_src.utils import MODEL_DIR, PROJ_ROOT, ModelBase, logger
 
@@ -28,8 +28,8 @@ class PipelineCreator(ModelBase):
         self.test_size = self.config_info["ml_train"]["test_size"]
         self.random_seed = self.config_info["ml_train"]["random_seed"]
         self.sample_df = None
-        self.X_train = None
-        self.X_valid = None
+        self.x_train = None
+        self.x_valid = None
         self.y_train = None
         self.y_valid = None
         self.model_names = self.config_info["ml_train"]["model_names"]
@@ -50,7 +50,7 @@ class PipelineCreator(ModelBase):
         logger.info("Data Loaded and Cleaned")
 
     def data_split(self):
-        self.X_train, self.X_valid, self.y_train, self.y_valid = train_test_split(
+        self.x_train, self.x_valid, self.y_train, self.y_valid = train_test_split(
             self.sample_df.drop(self.target, axis=1),
             self.sample_df[self.target],
             test_size=self.test_size,
@@ -122,7 +122,7 @@ class PipelineCreator(ModelBase):
                 scoring=self.scoring,
                 n_jobs=self.n_jobs,
             )
-            gs.fit(self.X_train, self.y_train)
+            gs.fit(self.x_train, self.y_train)
             best_clf = gs.best_estimator_
             res = {n: best_clf}
             res_list.append(res)
@@ -133,8 +133,8 @@ class PipelineCreator(ModelBase):
         best_model = None
         best_each_list = []
         for _, model in enumerate(models):
-            pred_train = model.predict(self.X_train)
-            pred_valid = model.predict(self.X_valid)
+            pred_train = model.predict(self.x_train)
+            pred_valid = model.predict(self.x_valid)
             train_acc = accuracy_score(self.y_train, pred_train)
             valid_acc = accuracy_score(self.y_valid, pred_valid)
             if valid_acc > best_acc:

@@ -22,36 +22,6 @@ with Path(f"{PROJ_ROOT}/config.yml").open() as f:
         logger.exception()
 
 
-def create_sample_data(
-    data_file: pd.DataFrame = config["ml_utils"]["raw_data_file"],
-    fraction: float = config["ml_utils"]["sample_fraction"],
-    random_state: int = config["ml_utils"]["random_state"],
-) -> tuple:
-    return (
-        pd.read_csv(Path(DATA_DIR, data_file))
-        .sample(frac=fraction, random_state=random_state)
-        .reset_index(drop=True)
-        .to_csv(Path(DATA_DIR, "depression_data_sample.csv", index=False)),
-        logger.info(f"Sample data created with fraction {fraction}"),
-        logger.info(f"Sample data saved: {DATA_DIR}/depression_data_sample.csv"),
-    )
-
-
-def create_data_profile(
-    data_file: pd.DataFrame = config["ml_utils"]["sample_data_file"],
-) -> None:
-    from ydata_profiling import ProfileReport
-
-    df_to_profile = pd.read_csv(Path(DATA_DIR, data_file), index_col=0)
-    data_profile = ProfileReport(
-        df_to_profile, title="Data Profiling Report", explorative=True
-    )
-    data_profile.to_file(Path(REPORTS_DIR, "depression_data_profile.html"))
-    logger.info(
-        f"Data profile created and saved: {REPORTS_DIR}/depression_data_profile.html"
-    )
-
-
 class ModelBase(ABC):
     @abstractmethod
     def table_fetch(self):
