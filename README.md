@@ -1,6 +1,6 @@
 # Interview-Mental-Health-Model
 
-Command line tool to run the sentiment analysis and machine learning model for the mental health data.
+This is the project for the interview tasks with mental health data. In this repo, src/genai_src constains the source code for the sentiment analysis, and src/ml_src contains source code for the machine learning predictive model. Command line tool to run the sentiment analysis and machine learning model is as follows: 
 #
 0. Set virtual environment \
 `just setup` 
