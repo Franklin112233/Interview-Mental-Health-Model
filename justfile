@@ -36,6 +36,10 @@ format:
 lint:
     @poetry run ruff check . --fix
 
+# Run the tests
+test:
+    @-poetry run pytest --cov=src tests --cov-report=term-missing --cov-report=xml:cov.xml
+
 # Clean out the local mlflow experiments
 clean_mlflow:
     -@rm -rf mlruns
